@@ -1,9 +1,18 @@
 from pydantic import BaseModel
+from typing import Optional
 from datetime import datetime
 
 
-class Staff_dto(BaseModel):
+class StaffDTO(BaseModel):
     name: str
     surname: str
-    time_in: datetime
-    time_out: datetime
+
+
+class TimeDTO(BaseModel):
+    time_in: Optional[datetime] = None
+    time_out: Optional[datetime] = None
+    comment: Optional[str] = None
+
+
+class OvertimeDTO(BaseModel):   
+    overtime: Optional[float] = None
