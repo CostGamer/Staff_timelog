@@ -25,7 +25,7 @@ class Time(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     time_in: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     time_out: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    comment: Mapped[str] = mapped_column(String(length=1000))
+    comment: Mapped[str] = mapped_column(String(length=1000), nullable=True)
     staff_id: Mapped[int] = mapped_column(ForeignKey("staff.id"))
 
     staff: Mapped["Staff"] = relationship("Staff", back_populates="times")
