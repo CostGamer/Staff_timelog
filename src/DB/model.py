@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
-from sqlalchemy import String, DateTime, ForeignKey
-from datetime import datetime
+from sqlalchemy import String, Date, Time, ForeignKey
+from datetime import time, date
 
 
 class Base(DeclarativeBase):
@@ -14,28 +14,18 @@ class Staff(Base):
     name: Mapped[str] = mapped_column(String(length=50))
     surname: Mapped[str] = mapped_column(String(length=50))
 
-    times: Mapped[list["Time"]] = relationship("Time", back_populates="staff")
-    overtimes: Mapped[list["Overtime"]] = relationship(
-        "Overtime", back_populates="staff")
+    times: Mapped[list["Time_set"]] = relationship("Time_set", back_populates="staff")
 
 
-class Time(Base):
+class Time_set(Base):
     __tablename__ = "time"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    time_in: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    time_out: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    time_in: Mapped[time] = mapped_column(Time, nullable=True)
+    time_out: Mapped[time] = mapped_column(Time, nullable=True)
+    date_set: Mapped[date] = mapped_column(Date, nullable=True)
+    overtime: Mapped[float] = mapped_column(nullable=True)
     comment: Mapped[str] = mapped_column(String(length=1000), nullable=True)
     staff_id: Mapped[int] = mapped_column(ForeignKey("staff.id"))
 
     staff: Mapped["Staff"] = relationship("Staff", back_populates="times")
-
-
-class Overtime(Base):
-    __tablename__ = "overtime"
-
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    overtime: Mapped[float] = mapped_column(nullable=True)
-    staff_id: Mapped[int] = mapped_column(ForeignKey("staff.id"))
-
-    staff: Mapped["Staff"] = relationship("Staff", back_populates="overtimes")

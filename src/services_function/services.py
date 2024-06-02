@@ -1,8 +1,9 @@
-from DB.dto_model import StaffDTO, TimeDTO, OvertimeDTO
-from DB.model import Staff, Time, Overtime
+from DB.dto_model import StaffDTO, TimeDTO
+from DB.model import Staff, Time_set
 from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
+from fastapi import HTTPException
 
 
 async def create_user(data: StaffDTO, db: AsyncSession):
@@ -20,6 +21,7 @@ async def create_user(data: StaffDTO, db: AsyncSession):
         db.add(user)
         await db.commit()
         await db.refresh(user)
+
         return user
         
     except SQLAlchemyError as e:
@@ -37,6 +39,7 @@ async def get_staff(db: AsyncSession):
         stmnt = select(Staff)
         result = await db.execute(stmnt)
         staff_list = result.scalars().all()
+
         return staff_list
     except SQLAlchemyError as e:
         print("Error get_staff:", e)
@@ -47,12 +50,24 @@ async def get_staff(db: AsyncSession):
 
 
 async def set_time(data: TimeDTO, db: AsyncSession, id: int):
-    time_p = Time(time_in=data.time_in, time_out=data.time_out,
-                  comment=data.comment, staff_id=id)
+    existing_staff = await db.get(Staff, id)
+    if not existing_staff:
+        raise HTTPException(status_code=404, detail="Staff not found")
+
+    time_p = Time_set(
+        time_in=data.time_in,
+        time_out=data.time_out,
+        date_set=data.date_set,
+        overtime=data.overtime,
+        comment=data.comment,
+        staff_id=id
+    )
     try:
         db.add(time_p)
         await db.commit()
         await db.refresh(time_p)
+
+        return time_p
     except SQLAlchemyError as e:
         await db.rollback()
         print("Error create_user:", e)
@@ -61,5 +76,3 @@ async def set_time(data: TimeDTO, db: AsyncSession, id: int):
         await db.rollback()
         print("Unexpected error create_user:", e)
         raise
-
-    return time_p
