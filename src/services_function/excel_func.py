@@ -7,6 +7,7 @@ from sqlalchemy.orm import aliased
 from DB.model import Staff, Time_set
 from datetime import datetime
 
+
 async def generate_excel_file_day(db: AsyncSession, date: datetime):
     try:
         # Получение данных сотрудников с данными за указанный день
@@ -72,7 +73,6 @@ async def generate_excel_file_day(db: AsyncSession, date: datetime):
     except Exception as e:
         print("Error generating Excel file:", e)
         raise
-
 
 
 async def generate_excel_file_month(db: AsyncSession, year: int, month: int):
