@@ -24,6 +24,7 @@ class Time_set(Base):
     time_in: Mapped[time] = mapped_column(Time, nullable=True)
     time_out: Mapped[time] = mapped_column(Time, nullable=True)
     date_set: Mapped[date] = mapped_column(Date, nullable=True)
+    hours: Mapped[float] = mapped_column(nullable=True)
     overtime: Mapped[float] = mapped_column(nullable=True)
     comment: Mapped[str] = mapped_column(String(length=1000), nullable=True)
     staff_id: Mapped[int] = mapped_column(ForeignKey("staff.id"))
