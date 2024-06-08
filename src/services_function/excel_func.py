@@ -32,19 +32,19 @@ async def generate_excel_file_day(db: AsyncSession, date: datetime):
             data.append({
                 "Имя": record.name,
                 "Фамилия": record.surname,
-                "Время прихода": record.time_in.strftime('%H:%M:%S') if record.time_in else "None",
-                "Время ухода": record.time_out.strftime('%H:%M:%S') if record.time_out else "None",
-                "День": record.date_set.strftime('%Y-%m-%d') if record.date_set else "None",
-                "Часы": record.hours if record.hours is not None else "None",
-                "Переработки": record.overtime if record.overtime is not None else "None",
-                "Комментарий": record.comment if record.comment else "None"
+                "Время прихода": record.time_in.strftime('%H:%M:%S') if record.time_in else "-",
+                "Время ухода": record.time_out.strftime('%H:%M:%S') if record.time_out else "-",
+                "День": record.date_set.strftime('%Y-%m-%d') if record.date_set else "-",
+                "Часы": record.hours if record.hours is not None else "-",
+                "Переработки": record.overtime if record.overtime is not None else "-",
+                "Комментарий": record.comment if record.comment else "-"
             })
 
         # Создание DataFrame
         df = pd.DataFrame(data)
         
         # Сохранение в Excel
-        output = BytesIO()
+        output = BytesIO()  
         with pd.ExcelWriter(output, engine='openpyxl') as writer:
             df.to_excel(writer, index=False, sheet_name='Staff Time Log')
             

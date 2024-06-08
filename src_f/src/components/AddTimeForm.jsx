@@ -1,157 +1,89 @@
-// import React from 'react';
-// import { Form, Input, Button, DatePicker, TimePicker, message } from 'antd';
-// import moment from 'moment';
-// import { addTime } from '../api';
-
-// const AddTimeForm = () => {
-//     const onFinish = async (values) => {
-//         try {
-//             await addTime(values.userId, {
-//                 time_in: values.time_in.utc().format(),
-//                 time_out: values.time_out.utc().format(),
-//                 date_set: values.date_set.format('YYYY-MM-DD'),
-//                 overtime: values.overtime,
-//                 comment: values.comment,
-//             });
-
-//             message.success('Time added successfully');
-//         } catch (error) {
-//             console.error('Error adding time:', error);
-//             message.error('Error adding time');
-//         }
-//     };
-
-//     return (
-//         <Form
-//             layout="vertical"
-//             onFinish={onFinish}
-//             style={{ maxWidth: 400 }}
-//         >
-//             <Form.Item
-//                 name="userId"
-//                 label="User ID"
-//                 rules={[{ required: true, message: 'Please input the User ID!' }]}
-//             >
-//                 <Input />
-//             </Form.Item>
-//             <Form.Item
-//                 name="date_set"
-//                 label="Date"
-//                 rules={[{ required: true, message: 'Please select a date!' }]}
-//             >
-//                 <DatePicker />
-//             </Form.Item>
-//             <Form.Item
-//                 name="time_in"
-//                 label="Time In"
-//                 rules={[{ required: true, message: 'Please select a time in!' }]}
-//             >
-//                 <TimePicker defaultOpenValue={moment('00:00:00', 'HH:mm:ss')} />
-//             </Form.Item>
-//             <Form.Item
-//                 name="time_out"
-//                 label="Time Out"
-//                 rules={[{ required: true, message: 'Please select a time out!' }]}
-//             >
-//                 <TimePicker defaultOpenValue={moment('00:00:00', 'HH:mm:ss')} />
-//             </Form.Item>
-//             <Form.Item
-//                 name="overtime"
-//                 label="Overtime"
-//                 rules={[{ required: true, message: 'Please input the overtime!' }]}
-//             >
-//                 <Input />
-//             </Form.Item>
-//             <Form.Item
-//                 name="comment"
-//                 label="Comment"
-//             >
-//                 <Input />
-//             </Form.Item>
-//             <Form.Item>
-//                 <Button type="primary" htmlType="submit">
-//                     Add Time
-//                 </Button>
-//             </Form.Item>
-//         </Form>
-//     );
-// };
-
-// export default AddTimeForm;
-
-
 import React from 'react';
-import { Form, Input, Button, DatePicker, TimePicker, message } from 'antd';
+import { ConfigProvider, Form, Input, Button, DatePicker, TimePicker, message } from 'antd';
+import ruRU from 'antd/es/locale/ru_RU';
+import 'moment/locale/ru';
 import moment from 'moment';
 import { addTime } from '../api';
+
+moment.locale('ru');
 
 const AddTimeForm = () => {
   const onFinish = async (values) => {
     try {
-      await addTime(values.userId, {
-        time_in: values.time_in.utc().format(),
-        time_out: values.time_out.utc().format(),
+      const payload = {
+        time_in: values.time_in.format('HH:mm:ss'),
+        time_out: values.time_out.format('HH:mm:ss'),
         date_set: values.date_set.format('YYYY-MM-DD'),
-        overtime: values.overtime,
-        comment: values.comment,
-      });
+        overtime: values.overtime !== undefined ? Number(values.overtime) : undefined, // Оставляем undefined, если поле пустое
+        comment: values.comment || '',
+      };
 
-      message.success('Time added successfully');
+      await addTime(Number(values.userId), payload);
+
+      message.success('Время добавлено');
     } catch (error) {
-      console.error('Error adding time:', error);
-      message.error('Error adding time');
+      console.error('Ошибка при добавлении времени:', error);
+      message.error('Ошибка при добавлении времени');
     }
   };
 
   return (
-    <Form layout="vertical" onFinish={onFinish} style={{ maxWidth: 400 }}>
-      <Form.Item
-        name="userId"
-        label="User ID"
-        rules={[{ required: true, message: 'Please input the User ID!' }]}
-      >
-        <Input />
-      </Form.Item>
-      <Form.Item
-        name="date_set"
-        label="Date"
-        rules={[{ required: true, message: 'Please select a date!' }]}
-      >
-        <DatePicker />
-      </Form.Item>
-      <Form.Item
-        name="time_in"
-        label="Time In"
-        rules={[{ required: true, message: 'Please select a time in!' }]}
-      >
-        <TimePicker defaultOpenValue={moment('00:00:00', 'HH:mm:ss')} />
-      </Form.Item>
-      <Form.Item
-        name="time_out"
-        label="Time Out"
-        rules={[{ required: true, message: 'Please select a time out!' }]}
-      >
-        <TimePicker defaultOpenValue={moment('00:00:00', 'HH:mm:ss')} />
-      </Form.Item>
-      <Form.Item
-        name="overtime"
-        label="Overtime"
-        rules={[{ required: true, message: 'Please input the overtime!' }]}
-      >
-        <Input />
-      </Form.Item>
-      <Form.Item
-        name="comment"
-        label="Comment"
-      >
-        <Input />
-      </Form.Item>
-      <Form.Item>
-        <Button type="primary" htmlType="submit">
-          Add Time
-        </Button>
-      </Form.Item>
-    </Form>
+    <ConfigProvider locale={ruRU}>
+      <Form layout="vertical" onFinish={onFinish} style={{ maxWidth: 400 }}>
+        <Form.Item
+          name="userId"
+          label="ID Пользователя"
+          rules={[
+            { required: true, message: 'Добавьте ID!' },
+            { type: 'number', transform: value => Number(value), message: 'ID должен быть цифрой!' }
+          ]}
+        >
+          <Input style={{ width: '100%' }} />
+        </Form.Item>
+        <Form.Item
+          name="date_set"
+          label="Дата"
+          rules={[{ required: true, message: 'Выберите дату!' }]}
+        >
+          <DatePicker style={{ width: '100%' }} />
+        </Form.Item>
+        <Form.Item
+          name="time_in"
+          label="Время прихода"
+          rules={[{ required: true, message: 'Добавьте время прихода!' }]}
+        >
+          <TimePicker format="HH:mm:ss" style={{ width: '100%' }} />
+        </Form.Item>
+        <Form.Item
+          name="time_out"
+          label="Время ухода"
+          rules={[{ required: true, message: 'Добавьте время ухода!' }]}
+        >
+          <TimePicker format="HH:mm:ss" style={{ width: '100%' }} />
+        </Form.Item>
+        <Form.Item
+          name="overtime"
+          label="Сверхурочные"
+          rules={[
+            { required: true, message: 'Пожалуйста, введите количество сверхурочных!' },
+            { type: 'number', transform: value => Number(value), message: 'Сверхурочные должны быть числом!' }
+          ]}
+        >
+          <Input style={{ width: '100%' }} />
+        </Form.Item>
+        <Form.Item
+          name="comment"
+          label="Комментарий"
+        >
+          <Input style={{ width: '100%' }} />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Добавить время
+          </Button>
+        </Form.Item>
+      </Form>
+    </ConfigProvider>
   );
 };
 
