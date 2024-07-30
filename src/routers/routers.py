@@ -34,9 +34,9 @@ async def add_department(data: DepartmentDTO, db: AsyncSession = Depends(get_db)
         raise HTTPException(status_code=500, detail=str(e))
 
 @router_staff.get('/gs/')
-async def get_all_staff(db: AsyncSession = Depends(get_db)):
+async def get_all_staff(department_id: int, db: AsyncSession = Depends(get_db)):
     try:
-        return await services.get_staff(db)
+        return await services.get_staff(db, department_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

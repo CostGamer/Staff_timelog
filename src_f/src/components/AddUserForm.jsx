@@ -1,31 +1,41 @@
-import React from 'react';
-import { Form, Input, Button, message } from 'antd';
-import { addStaff, fetchStaff } from '../api';
+import React, { useState } from 'react';
+import { Form, Input, Button, message, Select } from 'antd';
+import axios from 'axios';
 
-const AddUserForm = ({ refreshStaffList }) => {
+const { Option } = Select;
+
+const AddUserForm = ({ refreshStaffList, departments }) => {
+  const [loading, setLoading] = useState(false);
+
   const onFinish = async (values) => {
+    setLoading(true);
     try {
-      const staff = await fetchStaff();
+      const staff = await axios.get(`http://localhost:3000/gs/?department_id=${values.department}`); // Измените URL здесь
 
-      const userExists = staff.some(
+      const userExists = staff.data.some(
         (member) =>
           member.name === values.name && member.surname === values.surname
       );
 
       if (userExists) {
         message.error('Пользователь уже существует');
+        setLoading(false);
         return;
       }
 
-      await addStaff({
+      await axios.post(`http://localhost:3000/add/?id=${values.department}`, {
         name: values.name,
         surname: values.surname,
+        fathername: values.fathername,
+        bid: values.bid,
       });
 
       message.success('Пользователь добавлен');
       refreshStaffList();
+      setLoading(false);
     } catch (error) {
-      message.error('Пользователь уже существует');
+      message.error('Ошибка при добавлении пользователя');
+      setLoading(false);
     }
   };
 
@@ -45,8 +55,41 @@ const AddUserForm = ({ refreshStaffList }) => {
       >
         <Input />
       </Form.Item>
+      <Form.Item
+        name="fathername"
+        label="Отчество"
+        rules={[{ required: true, message: 'Напишите отчество!' }]}
+      >
+        <Input />
+      </Form.Item>
+      <Form.Item
+        name="department"
+        label="Отдел"
+        rules={[{ required: true, message: 'Выберите отдел!' }]}
+      >
+        <Select>
+          {departments.map((dep) => (
+            <Option key={dep.id} value={dep.id}>
+              {dep.department}
+            </Option>
+          ))}
+        </Select>
+      </Form.Item>
+      <Form.Item
+        name="bid"
+        label="bid"
+        rules={[{ required: true, message: 'Выберите bid!' }]}
+      >
+        <Select>
+          {[0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].map((value) => (
+            <Option key={value} value={value}>
+              {value}
+            </Option>
+          ))}
+        </Select>
+      </Form.Item>
       <Form.Item>
-        <Button type="primary" htmlType="submit">
+        <Button type="primary" htmlType="submit" loading={loading}>
           Добавить пользователя
         </Button>
       </Form.Item>

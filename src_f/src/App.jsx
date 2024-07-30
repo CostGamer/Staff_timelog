@@ -1,177 +1,52 @@
-// import React, { useState, useEffect } from 'react';
-// import { fetchStaff } from './api';
-// import UserMenu from './components/UserMenu';
-// import AddUserForm from './components/AddUserForm';
-// import AddTimeForm from './components/AddTimeForm';
-// import ActionButtons from './components/ActionButtons';
-// import DateInputModal from './components/DateInputModal';
-// import MonthInputModal from './components/MonthInputModal';
-// import { Modal } from 'antd';
-
-// const App = () => {
-//   const [staff, setStaff] = useState([]);
-//   const [showAddUser, setShowAddUser] = useState(false);
-//   const [showAddTime, setShowAddTime] = useState(false);
-//   const [showUserList, setShowUserList] = useState(false);
-//   const [showDateInput, setShowDateInput] = useState(false);
-//   const [showMonthInput, setShowMonthInput] = useState(false);
-
-//   const refreshStaffList = async () => {
-//     try {
-//       const staffResponse = await fetchStaff();
-//       const menuStaff = staffResponse.map((member) => ({
-//         key: String(member.id),
-//         label: `${member.id} - ${member.fullname}`,
-//       }));
-//       setStaff(menuStaff);
-//     } catch (error) {
-//       console.error('Error refreshing staff list:', error);
-//     }
-//   };
-
-//   useEffect(() => {
-//     refreshStaffList();
-//   }, []);
-
-//   const onClick = (e) => {
-//     console.log('click ', e);
-//   };
-
-//   return (
-//     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-//       <h1>Журнал учета времени</h1>
-//       <ActionButtons
-//         setShowAddUser={setShowAddUser}
-//         setShowAddTime={setShowAddTime}
-//         setShowUserList={setShowUserList}
-//         setShowDateInput={setShowDateInput}
-//         setShowMonthInput={setShowMonthInput}
-//       />
-//       <Modal
-//         title="Добавить пользователя"
-//         open={showAddUser}
-//         onCancel={() => setShowAddUser(false)}
-//         footer={null}
-//       >
-//         <AddUserForm refreshStaffList={refreshStaffList} />
-//       </Modal>
-//       <Modal
-//         title="Установить время"
-//         open={showAddTime}
-//         onCancel={() => setShowAddTime(false)}
-//         footer={null}
-//       >
-//         <AddTimeForm />
-//       </Modal>
-//       <Modal
-//         title="Список пользователей"
-//         open={showUserList}
-//         onCancel={() => setShowUserList(false)}
-//         footer={null}
-//         centered
-//       >
-//         <UserMenu staff={staff} onClick={onClick} />
-//       </Modal>
-//       <DateInputModal show={showDateInput} onClose={() => setShowDateInput(false)} />
-//       <MonthInputModal show={showMonthInput} onClose={() => setShowMonthInput(false)} />
-//     </div>
-//   );
-// };
-
-// export default App;
-
-import React, { useState, useEffect } from 'react';
-import { fetchStaff } from './api';
-import UserMenu from './components/UserMenu';
-import AddUserForm from './components/AddUserForm';
-import AddTimeForm from './components/AddTimeForm';
-import UpdateTimeForm from './components/UpdateTimeForm';
+import React, { useState } from 'react';
 import ActionButtons from './components/ActionButtons';
-import DateInputModal from './components/DateInputModal';
-import MonthInputModal from './components/MonthInputModal';
-import { Modal } from 'antd';
+import 'antd/dist/reset.css';
+import './index.css';
+import backgroundImage from './77da4af49f74.jpg'; // Импортируем изображение
 
 const App = () => {
-  const [staff, setStaff] = useState([]);
   const [showAddUser, setShowAddUser] = useState(false);
   const [showAddTime, setShowAddTime] = useState(false);
-  const [showUpdateTime, setShowUpdateTime] = useState(false);
   const [showUserList, setShowUserList] = useState(false);
   const [showDateInput, setShowDateInput] = useState(false);
   const [showMonthInput, setShowMonthInput] = useState(false);
-
-  const refreshStaffList = async () => {
-    try {
-      const staffResponse = await fetchStaff();
-      const menuStaff = staffResponse.map((member) => ({
-        key: String(member.id),
-        label: `${member.id} - ${member.fullname}`,
-      }));
-      setStaff(menuStaff);
-    } catch (error) {
-      console.error('Error refreshing staff list:', error);
-    }
-  };
-
-  useEffect(() => {
-    refreshStaffList();
-  }, []);
-
-  const onClick = (e) => {
-    console.log('click ', e);
-  };
+  const [showUpdateTime, setShowUpdateTime] = useState(false);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-      <h1>Журнал учета времени</h1>
-      <ActionButtons
-        setShowAddUser={setShowAddUser}
-        setShowAddTime={setShowAddTime}
-        setShowUpdateTime={setShowUpdateTime}
-        setShowUserList={setShowUserList}
-        setShowDateInput={setShowDateInput}
-        setShowMonthInput={setShowMonthInput}
-      />
-      <Modal
-        title="Add User"
-        open={showAddUser}
-        onCancel={() => setShowAddUser(false)}
-        footer={null}
-      >
-        <AddUserForm refreshStaffList={refreshStaffList} />
-      </Modal>
-      <Modal
-        title="Set Time"
-        open={showAddTime}
-        onCancel={() => setShowAddTime(false)}
-        footer={null}
-      >
-        <AddTimeForm />
-      </Modal>
-      <Modal
-        title="Update Time"
-        open={showUpdateTime}
-        onCancel={() => setShowUpdateTime(false)}
-        footer={null}
-      >
-        <UpdateTimeForm />
-      </Modal>
-      <Modal
-        title="User List"
-        open={showUserList}
-        onCancel={() => setShowUserList(false)}
-        footer={null}
-      >
-        <UserMenu onClick={onClick} staff={staff} />
-      </Modal>
-      <DateInputModal
-        show={showDateInput}
-        onClose={() => setShowDateInput(false)} // Закрыть модальное окно при нажатии на кнопку "Закрыть"
-      />
-      <MonthInputModal
-        show={showMonthInput}
-        onClose={() => setShowMonthInput(false)} // Закрыть модальное окно при нажатии на кнопку "Закрыть"
-      />
+    <div
+      className="container mx-auto flex flex-col items-center justify-center min-h-screen"
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover', // Адаптируем изображение к размеру экрана
+        backgroundRepeat: 'no-repeat', // Предотвращаем повторение изображения
+        backgroundPosition: 'center', // Центрируем изображение
+        overflow: 'hidden', // Отключаем прокрутку страницы
+      }}
+    >
+      <div style={{
+        backgroundColor: 'rgba(255, 255, 255, 0.6)', // Белый полупрозрачный фон
+        borderRadius: '0em', // Скругленные углы
+        padding: '0em', // Отступы вокруг кнопок
+        marginTop: '0em', // Отступ сверху
+        marginRight: '0em', // Отступ справа
+        marginBottom: '0em', // Отступ снизу
+        marginLeft: '0em', // Отступ слева
+      }}>
+        <ActionButtons
+          setShowAddUser={setShowAddUser}
+          setShowAddTime={setShowAddTime}
+          setShowUserList={setShowUserList}
+          setShowDateInput={setShowDateInput}
+          setShowMonthInput={setShowMonthInput}
+          setShowUpdateTime={setShowUpdateTime}
+        />
+        {showAddUser && <div>Добавить пользователя</div>}
+        {showAddTime && <div>Указать время</div>}
+        {showUserList && <div>Список пользователей</div>}
+        {showDateInput && <div>Получить excel за день</div>}
+        {showMonthInput && <div>Получить excel за месяц</div>}
+        {showUpdateTime && <div>Исправить время</div>}
+      </div>
     </div>
   );
 };

@@ -66,7 +66,7 @@ async def add_dep(data: DepartmentDTO, db: AsyncSession):
         raise
 
 
-async def get_staff(db: AsyncSession):
+async def get_staff(db: AsyncSession, department_id: int):
     '''
     Возвращает список пользователей
     '''
@@ -74,7 +74,9 @@ async def get_staff(db: AsyncSession):
         stmnt = select(
             Staff.id,
             func.concat(Staff.surname, ' ', Staff.name, ' ', Staff.fathername).label('full_name')
-            )
+        ).where(
+            Staff.department == department_id
+        )
         result = await db.execute(stmnt)
         staff_list = result.fetchall()
 
