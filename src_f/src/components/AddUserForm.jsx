@@ -1,11 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, message, Select } from 'antd';
 import axios from 'axios';
 
 const { Option } = Select;
 
-const AddUserForm = ({ refreshStaffList, departments }) => {
+const AddUserForm = ({ refreshStaffList, departments, isVisible, onClose }) => {
   const [loading, setLoading] = useState(false);
+  const [form] = Form.useForm(); // Используем объект формы для управления состоянием
+
+  useEffect(() => {
+    if (!isVisible) {
+      form.resetFields(); // Сброс полей формы при закрытии модального окна
+    }
+  }, [isVisible, form]);
 
   const onFinish = async (values) => {
     setLoading(true);
@@ -31,16 +38,38 @@ const AddUserForm = ({ refreshStaffList, departments }) => {
       });
 
       message.success('Пользователь добавлен');
-      refreshStaffList();
-      setLoading(false);
+
+      // Проверка наличия функции refreshStaffList перед вызовом
+      if (typeof refreshStaffList === 'function') {
+        refreshStaffList();
+      }
+
+      form.resetFields(); // Сброс полей формы
+
     } catch (error) {
+      console.error('Ошибка при добавлении пользователя:', error);
       message.error('Ошибка при добавлении пользователя');
+    } finally {
       setLoading(false);
     }
   };
 
+  const buttonStyle = {
+    backgroundColor: '#8E0612', // Цвет кнопки
+    borderColor: '#8E0612', // Цвет границы кнопки
+    color: '#fff', // Цвет текста кнопки
+    outline: 'none', // Убираем контур фокуса
+    boxShadow: 'none', // Убираем тень активации
+    WebkitTapHighlightColor: 'transparent', // Убирает цвет подсветки на мобильных устройствах
+  };
+
   return (
-    <Form layout="vertical" onFinish={onFinish} style={{ maxWidth: 400 }}>
+    <Form
+      form={form}
+      layout="vertical"
+      onFinish={onFinish}
+      style={{ maxWidth: 400 }}
+    >
       <Form.Item
         name="name"
         label="Имя"
@@ -89,7 +118,12 @@ const AddUserForm = ({ refreshStaffList, departments }) => {
         </Select>
       </Form.Item>
       <Form.Item>
-        <Button type="primary" htmlType="submit" loading={loading}>
+        <Button
+          type="primary"
+          htmlType="submit"
+          loading={loading}
+          style={buttonStyle}
+        >
           Добавить пользователя
         </Button>
       </Form.Item>

@@ -1,14 +1,28 @@
-import React, { useState } from 'react';
-import { Button, Modal, Select, DatePicker, message } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Button, Modal, Select, DatePicker, message, ConfigProvider } from 'antd';
 import axios from 'axios';
 import moment from 'moment';
+import 'moment/locale/ru';
+import locale from 'antd/es/locale/ru_RU';
+import './styles2.css'; // Подключаем стили
 
 const { Option } = Select;
 
-const DownloadMonthlyReport = ({ isVisible, onClose, departments }) => {
+const DownloadMonthlyReport = ({ isVisible, onClose, departments, buttonColor }) => {
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    moment.locale('ru'); // Установка локали для moment на русский язык
+  }, []);
+
+  // Функция для сброса состояния формы
+  const resetForm = () => {
+    setSelectedDepartment(null);
+    setSelectedDate(null);
+    onClose();
+  };
 
   const downloadFile = async () => {
     if (!selectedDepartment || !selectedDate) {
@@ -46,42 +60,57 @@ const DownloadMonthlyReport = ({ isVisible, onClose, departments }) => {
     }
   };
 
+  const buttonStyle = {
+    backgroundColor: buttonColor || '#8E0612', // Основной цвет кнопки
+    borderColor: buttonColor || '#8E0612',
+    color: '#fff',
+    outline: 'none', // Убирает контур фокуса
+    boxShadow: 'none', // Убирает тень активации
+    WebkitTapHighlightColor: 'transparent', // Убирает цвет подсветки на мобильных устройствах
+  };
+
   return (
-    <Modal
-      title="Скачать отчет за месяц"
-      visible={isVisible}
-      onCancel={onClose}
-      footer={null}
-      centered
-    >
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Select
-          placeholder="Выберите отдел"
-          onChange={(value) => setSelectedDepartment(value)}
-          style={{ width: '100%', marginBottom: '20px' }}
-        >
-          {departments.map((dep) => (
-            <Option key={dep.id} value={dep.id}>
-              {dep.department}
-            </Option>
-          ))}
-        </Select>
-        <DatePicker
-          picker="month"
-          onChange={(date) => setSelectedDate(date)}
-          style={{ width: '100%', marginBottom: '20px' }}
-          format="MMMM YYYY" // Optional: To display month and year format
-        />
-        <Button
-          type="primary"
-          onClick={downloadFile}
-          loading={loading}
-          style={{ width: '100%' }}
-        >
-          Получить файл за месяц
-        </Button>
-      </div>
-    </Modal>
+    <ConfigProvider locale={locale}>
+      <Modal
+        title={<div className="centered-title">Скачать отчет за месяц</div>}
+        visible={isVisible}
+        onCancel={resetForm} // Сброс состояния при закрытии модального окна
+        footer={null}
+        centered
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Select
+            className="custom-select" // Применяем кастомные стили для Select
+            placeholder="Выберите отдел"
+            value={selectedDepartment}
+            style={{ marginBottom: '20px', width: '100%' }}
+            onChange={(value) => setSelectedDepartment(value)}
+          >
+            {departments.map((dep) => (
+              <Option key={dep.id} value={dep.id}>
+                {dep.department}
+              </Option>
+            ))}
+          </Select>
+          <DatePicker
+            picker="month"
+            value={selectedDate}
+            onChange={(date) => setSelectedDate(date)}
+            style={{ marginBottom: '20px', width: '100%' }}
+            format="MMMM YYYY" // Формат отображения месяца и года
+            placeholder="Выберите месяц" // Текст по умолчанию в поле ввода
+          />
+          <Button
+            type="primary"
+            onClick={downloadFile}
+            loading={loading}
+            style={{ width: '100%', ...buttonStyle }}
+          >
+            Получить файл за месяц
+          </Button>
+        </div>
+      </Modal>
+    </ConfigProvider>
   );
 };
 

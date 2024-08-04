@@ -1,0 +1,24 @@
+/* Стили для компонента Input */
+.custom-input {
+  border-color: #d9d9d9; /* Цвет обводки по умолчанию */
+  transition: border-color 0.3s ease; /* Плавный переход цвета обводки */
+}
+
+.custom-input:hover,
+.custom-input:focus {
+  border-color: #8E0612 !important; /* Красная обводка при наведении и фокусе */
+  box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.2) !important; /* Красная тень */
+}
+
+/* Стили для компонента Select */
+.custom-select .ant-select-selector {
+  border-color: #d9d9d9; /* Цвет обводки по умолчанию */
+  transition: border-color 0.3s ease; /* Плавный переход цвета обводки */
+}
+
+.custom-select:hover .ant-select-selector,
+.custom-select .ant-select-selector:focus,
+.custom-select .ant-select-selector-focused {
+  border-color: #8E0612 !important; /* Красная обводка при наведении и фокусе */
+  box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.2) !important; /* Красная тень */
+}
